@@ -1,11 +1,11 @@
-% clear; clc;
+clear; clc;
 addpath(genpath('../data'));
 
 config;
 
 %% Parsing the file 
-filename = "taxi_off_2018-04-09_070000_100000.csv";
-% event_struct = taxiEventParser(filename);
+filename = "taxi_off_2018-04-02_070000_100000.csv";
+event_struct = taxiEventParser(filename);
 
 roi = standard_roi;
 event_spots = findSpotROI(event_struct.spot, roi);
