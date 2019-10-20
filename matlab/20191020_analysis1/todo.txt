@@ -1,0 +1,17 @@
+0. data preparation 
+- Parse On/Off event pair 
+- restrcit ROI 
+
+1. single day analysis 
+- where are the hot-spots?
+    - static jet viz 
+        - ON/OFF/Diff
+        - 100m / 300m / 500m 
+        -> 총 9개 (3x3)
+    - movie (with increasing threshold)
+        - ON/OFF/Diff
+        -> 총 3개
+
+2. multi-day analysis
+
+

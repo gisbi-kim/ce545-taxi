@@ -1,0 +1,64 @@
+clear; clc;
+data_dir = "/home/gskim/Dropbox/19 Summer-Fall KAIST/4. 수업/CE545/1. 프로젝트/3. main 시간순/20191020 이것저것 wip/data/";
+addpath(genpath(data_dir));
+
+%%
+config;
+roi = standard_roi;
+
+%% Parsing the file 
+time_duration = "07-10";
+
+filename = "taxi_onoffpair_2018-04-02_070000_100000.csv";
+filepath = fullfile(data_dir, "onoffevent_pair", time_duration, filename);
+
+[on_struct, off_struct, travel_times] = taxiPairEventParser(filepath);
+
+
+%% Metric to Grid map 
+% grid_size is defined in the config.m
+% but for convinience, redefine here.
+GRID = 300;
+
+on_grid = eventstruct2gridmap(on_struct, roi, grid_size);
+off_grid = eventstruct2gridmap(off_struct, roi, grid_size);
+diff_grid = off_grid - on_grid;
+
+
+%% viz hot spots
+color_range = [0, round(grid_size/3)];
+
+onofftype = "ON"; fig_idx = 2;
+makeFigureGridMap(fig_idx, on_grid, onofftype, time_duration, grid_size, color_range)
+
+onofftype = "OFF"; fig_idx = 3;
+makeFigureGridMap(fig_idx, off_grid, onofftype, time_duration, grid_size, color_range)
+
+onofftype = "Diff (OFF - ON)"; fig_idx = 4;
+color_range = [0, 200];
+makeFigureGridMap(fig_idx, diff_grid, onofftype, time_duration, grid_size, color_range)
+
+
+%% how many grids are the hot spot?
+num_grids_whole = size(grid_map,1) * size(grid_map,2);
+num_grids_nonzeros = nnz(find(grid_map > 0));
+disp([num_grids_whole, num_grids_nonzeros])
+
+% main
+num_hotspots = nnz(find(grid_map > HOT_SPOT_NUM_THRES));
+disp([num_hotspots, ...
+      100*(num_hotspots/num_grids_nonzeros), ...
+      100*(num_hotspots/num_grids_whole)]);
+
+
+
+%% grid map to histogram 
+grid_map_histvec = reshape(grid_map, size(grid_map,1)*size(grid_map,2), 1);
+grid_map_histvec_nonzeros = grid_map_histvec(find(grid_map_histvec~=0));
+
+num_bars = 500;
+figure(3); clf;
+histogram(grid_map_histvec_nonzeros, num_bars)
+ylim([0, 50]);
+
+
